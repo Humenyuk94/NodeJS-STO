@@ -1,0 +1,34 @@
+<nav class="blue darken-4">
+  <div class="nav-wrapper">
+    <a href="/api/" class="brand-logo">Nicky</a>
+    <ul id="nav-mobile" class="right hide-on-med-and-down">
+
+      {{#if isIndex}}
+      <li class="active"><a href="/api/">Головна</a></li>
+      {{else}}
+      <li><a href="/api/">Головна</a></li>
+      {{/if}}
+      
+      {{#if isLogged}}
+        {{#if isLogins}}
+        <li class="active"><a href="/api/records">Список записів</a></li>
+        {{else}}
+        <li><a href="/api/records">Список записів</a></li>
+        {{/if}}
+      {{/if}}
+
+      {{#if isCreate}}
+      <li class="active"><a href="/api/create">Створити запис</a></li>
+      {{else}}
+      <li><a href="/api/create">Створити запис</a></li>
+      {{/if}}
+
+      {{#if isRegister}}
+      <li class="active"><a href="/api/register">Вхід</a></li>
+      {{else}}
+      <li><a href="/api/register">Вхід</a></li>
+      {{/if}}
+
+    </ul>
+  </div>
+</nav>

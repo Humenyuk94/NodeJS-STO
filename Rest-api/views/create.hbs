@@ -1,0 +1,35 @@
+<table>
+    <thead>
+      <th>Id послуги</th>
+      <th>Названа послуги</th>
+      <th>Опис</th>
+      <th>Ціна</th>
+    </tr>
+    </thead>
+    {{#each result}}
+    <tr class="todo">
+      <td>{{ServId}}</td>
+      <td>{{Name}}</td>
+      <td>{{ServDescription}}</td>
+      <td>{{Price}}</td>
+    </tr>
+    
+    {{/each}}
+  </table>
+  {{#if isLogged}}
+  <form action="/api/create" method="POST">
+    
+    <h2>Записатися</h2>
+
+    <div class="input-field">
+      <a>Id послуги</a>
+      <input type="text" name="ServId">
+      <a>Спосіб оплати</a>
+      <input type="text" name="PaymentType">
+    </div>
+
+    <button type="submit" class="btn">Записатися</button>
+  </form>
+  {{else}}
+  <h3 style="color:red">Будь ласка, ввійдіть в систему, щоб записатися!</h3>>
+  {{/if}}

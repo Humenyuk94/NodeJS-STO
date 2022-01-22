@@ -1,0 +1,61 @@
+{{#if isWorker}}
+  <h2>Записи</h2>
+  {{#if result.length}}
+    <table>
+      <thead>
+        <th>id</th>
+        <th>Названа послуги</th>
+        <th>Дата</th>
+        <th>ПІБ користувача</th>
+        <th>Метод оплати</th>
+        <th>ПІБ робітника</th>
+        <th>Стан</th>
+      </tr>
+      </thead>
+      {{#each result}}
+      <tr class="todo">
+        <td>{{RecordId}}</td>
+        <td>{{Name}}</td>
+        <td>{{CreateDate}}</td>
+        <td>{{Customer}}</td>
+        <td>{{PaymentType}}</td>
+        <td>{{Worker}}</td>
+        <td>{{RecordState}}</td>
+      </tr>
+      
+      {{/each}}
+    </table>
+  {{else}}
+    <p>Записей нету!</p>
+  {{/if}}
+{{else}}
+<h2>Ваші записи</h2>
+{{#if result.length}}
+    <table>
+      <thead>
+        <th>id</th>
+        <th>Названа послуги</th>
+        <th>Дата</th>
+        <th>ПІБ користувача</th>
+        <th>Метод оплати</th>
+        <th>ПІБ робітника</th>
+        <th>Стан</th>
+      </tr>
+      </thead>
+      {{#each result}}
+      <tr class="todo">
+        <td>{{RecordId}}</td>
+        <td>{{Name}}</td>
+        <td>{{CreateDate}}</td>
+        <td>{{Customer}}</td>
+        <td>{{PaymentType}}</td>
+        <td>{{Worker}}</td>
+        <td>{{RecordState}}</td>
+      </tr>
+      
+      {{/each}}
+    </table>
+  {{else}}
+    <p>Записів нема!</p>
+  {{/if}}
+{{/if}}
