@@ -126,8 +126,6 @@ router.route('/records').get((req,res)=>{
 router.route('/create').post((request,response)=>{
 	if(isLogged){
 		let auth = {...request.body}
-		
-		var auths;
 		dboperations.getAuths().then(result => {
 			dboperations.addRecord(auth, result).then(result => {
 			   response.redirect('/api/auths')
