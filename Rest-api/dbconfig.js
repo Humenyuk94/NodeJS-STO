@@ -1,15 +1,15 @@
-
+var sql = require('mssql');
 const config = {
-    user :'UserTest34s',
-    password :'123',
-    server:'DESKTOP-8G26CIU',
+    user :'UserTest123',
+    password :'Frostmorn23@',
+    server:'mssql-66932-0.cloudclusters.net',
     database:'STO',
     options:{
-        trustedconnection: true,
-        enableArithAbort : true, 
-        instancename :'DESKTOP-8G26CIU'
+        encrypt: true, // for azure
+        trustServerCertificate: true,
+        instancename :'mssql-66932-0.cloudclusters.net'
     },
-   
+    Port : 18209
 }
 
 module.exports = config; 
