@@ -1,6 +1,6 @@
 
 const config = {
-    user :'UserTest',
+    user :'UserTest34s',
     password :'123',
     server:'DESKTOP-8G26CIU',
     database:'STO',
