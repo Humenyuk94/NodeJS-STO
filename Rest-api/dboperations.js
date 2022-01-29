@@ -1,13 +1,14 @@
 var config = require('./dbconfig');
-const sql = require('mssql/msnodesqlv8');
+const sql = require('mysql');
 var Auth = require('./auth')
 var currentUser = null;
 var currentId = 0;
+const db = require('./settings/db')
 
 async function getAuths() {
     try {
-        let pool = await sql.connect(config);
-        let auths = await pool.request().query("SELECT * from Auth");
+        let pool = await sql.createConnection(config);
+        let auths = await pool.query("SELECT * from Auth");
 		/*var auth = new Auth({
 			AuthId: auths[0].authId,
 			Mail: auths[0].Mail,
@@ -24,7 +25,7 @@ async function getAuths() {
 
 async function getRecords() {
     try {
-        let pool = await sql.connect(config);
+        let pool = await sql.createConnection(config);
         let records = await pool.request().query("Select r.RecordId, s.Name, r.CreateDate, c.Name+' '+c.Surname+' '+c.Patronymic as 'Customer', r.PaymentType, w.Surname+' '+w.Name as 'Worker', r.RecordState from Record r join Serv s on s.ServId = r.ServId join Customer c on c.CustomerId = r.CustomerId join Worker w on w.WorkerId = r.WorkerId");
         console.log(records.recordset)
 		return records.recordset;
@@ -36,13 +37,13 @@ async function getRecords() {
 
 async function getURecords() {
     try {
-        let pool = await sql.connect(config);
+        let pool = await sql.createConnection(config);
 		//console.log("curr "+currentId);
-		let customer = await pool.request()
+		let customer = await pool
 			.input('authId', sql.Int, currentId)
 			.query("SELECT * from Customer where AuthId = @authId");
 		let customerId = customer.recordset[0].CustomerId;
-        let records = await pool.request()
+        let records = await pool
 		.input('customerId', sql.Int, customerId)
 		.query("Select r.RecordId, s.Name, r.CreateDate, c.Name+' '+c.Surname+' '+c.Patronymic as 'Customer', r.PaymentType, w.Surname+' '+w.Name as 'Worker', r.RecordState from Record r join Serv s on s.ServId = r.ServId join Customer c on c.CustomerId = r.CustomerId join Worker w on w.WorkerId = r.WorkerId where c.CustomerId = @customerId");
 		//console.log(records)
@@ -55,7 +56,7 @@ async function getURecords() {
 
 async function getServ() {
     try {
-        let pool = await sql.connect(config);
+        let pool = await sql.createConnection(config);
         let serv = await pool.request().query("SELECT * from Serv");
         return serv.recordset;
     }
@@ -66,8 +67,8 @@ async function getServ() {
 
 async function getAuth(authId) {
     try {
-        let pool = await sql.connect(config);
-        let auth = await pool.request()
+        let pool = await sql.createConnection(config);
+        let auth = await pool
             .input('input_parameter', sql.Int, authId)
             .query("SELECT * from Auth where Id = @input_parameter");
         return auth.recordsets;
@@ -80,7 +81,7 @@ async function getAuth(authId) {
 
 async function addRecord(auth, auths) {
     try {
-        let pool = await sql.connect(config);
+        let pool = await sql.createConnection(config);
 			var today = new Date();
 			var Serv = await pool.request().query("SELECT * from Serv");
 			var date = today.getFullYear()+'-'+today.getMonth()+'-'+today.getDate();
@@ -99,7 +100,7 @@ async function addRecord(auth, auths) {
 			}
 			
 			
-		var insertAuth = await pool.request()
+		var insertAuth = await pool
             .input('ServId', sql.Int, ServId)
             .input('CreateDate', sql.Date, date)
 			.input('CustomerId', sql.Int, CustomerId)
@@ -117,7 +118,7 @@ async function addRecord(auth, auths) {
 
 async function addAuth(auth, auths) {
     try {
-        let pool = await sql.connect(config);
+        let pool = await sql.createConnection(config);
         
 			var Mail = auth.Mail;
 			var Pass = auth.Pass;
@@ -130,7 +131,7 @@ async function addAuth(auth, auths) {
 			}
 		var insertAuth;	
 		if(!isInDB){
-		insertAuth = await pool.request()
+		insertAuth = await pool
             //.input('AuthId', sql.Int, auth.AuthId)
             .input('Mail', sql.NVarChar, auth.Mail)
             .input('Pass', sql.NVarChar, auth.Pass)
@@ -153,7 +154,7 @@ async function addAuth(auth, auths) {
 
 async function Authent(auth, auths) {
     try {
-		let pool = await sql.connect(config);
+		let pool = await sql.createConnection(config);
 		
 			var Mail = auth.Mail;
 			var Pass = auth.Pass;
@@ -161,7 +162,7 @@ async function Authent(auth, auths) {
 			var isWorker = false;
 			for(i=0;i<auths.length;i++){
 				if(auths[i].Mail==auth.Mail && auths[i].Pass == auth.Pass){
-					let customer = await pool.request()
+					let customer = await pool
 					.input('authId', sql.Int, auths[i].AuthId)
 					.query("SELECT * from Customer where AuthId = @authId");
 					if(customer.recordset[0].TypeAccess == 'Worker'){

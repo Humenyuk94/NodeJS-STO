@@ -1,19 +1,10 @@
-var sql = require('mssql');
-var config = {  
-        server: 'mssql-66932-0.cloudclusters.net',  //update me
-        authentication: {
-            type: 'default',
-            options: {
-                userName: 'UserTest123', //update me
-                password: 'Frostmorn23@'  //update me
-            }
-        },
-        options: {
-            // If you are on Microsoft Azure, you need encryption:
-            encrypt: true,
-            database: 'STO'  //update me
-			 encrypt: true, // for azure
-        trustServerCertificate: true,
-        instancename :'mssql-66932-0.cloudclusters.net'
-        }
+var sql = require('mysql');
+const config = {
+    host: "mysql-67194-0.cloudclusters.net",
+    user: "admin",
+    database: "test",
+    password: "d65mIvn7",
+    port: "14072"
+}
+
 module.exports = config; 
