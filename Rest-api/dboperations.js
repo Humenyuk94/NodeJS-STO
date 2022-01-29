@@ -1,8 +1,10 @@
+'use strict'
 var config = require('./dbconfig');
 const sql = require('mysql');
 var Auth = require('./auth')
 var currentUser = null;
 var currentId = 0;
+const response = require('./response')
 const db = require('./settings/db')
 
 async function getAuths() {
@@ -60,44 +62,38 @@ async function getServ() {
 	return serv.recordset;
 }
 
-async function getAuth(authId) {
-	try {
-		let pool = await sql.createConnection(config);
-		let auth = await pool
-			.input('input_parameter', sql.Int, authId)
-			.query("SELECT * from Auth where Id = @input_parameter");
-		return auth.recordsets;
 
-	}
-	catch (error) {
-		console.log(error);
-	}
 }
-async function getAuth(authId) {
-	db.query("SELECT * from Auth where Id = @input_parameter",(error, rows, fields)=>{
+async function getAuth(req, res) {
+	db.query("SELECT * from Auth where Id ='" + req.body.Mail + "' ",(error, rows, fields)=>{
 		if(error) {
 			response.status(400, error, res)
 		}
 		else if(rows.length <= 0) {
-			response.status(401, {message: `Пользователь с email - ${@input_parameter} не найден. Пройдите регистрацию.`}, res)
-		}else {
-			response.status(200, return auth.recordsets)
+			response.status(401, {message: `Пользователь с email - ${req.body.Mail} не найден. Пройдите регистрацию.`}, res)
 		}
-	else {
-			//Выкидываем ошибку что пароль не верный
-			response.status(401, {message: `Пароль не верный.`}, res)
+		 else {
+			const row = JSON.parse(JSON.stringify(rows))
+			row.map(rw => {
+				const password = req.body.Pass
+				if (Pass) {
+					const jwt_tocken = jwt.sign({
 
+						userId: rw.AuthId,
+						email: rw.Mail
+					}, config.jwt, {expiresIn: 200 * 200})
+					response.status(200, {token: `Bearer ${token}`}, res)
+				}
+	            else {
+					//Выкидываем ошибку что пароль не верный
+					response.status(401, {message: `Пароль не верный.`}, res)
+				}
+				return true
+		    })
 		}
 	})
-.input('input_parameter', sql.Int, authId)
-		.query("SELECT * from Auth where Id = @input_parameter");
-	return auth.recordsets;
+}
 
-}
-catch (error) {
-	console.log(error);
-}
-}
 
 async function addRecord(auth, auths) {
 	try {
