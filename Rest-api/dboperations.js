@@ -1,21 +1,19 @@
-'use strict'
 var config = require('./dbconfig');
 const sql = require('mysql');
 var Auth = require('./auth')
 var currentUser = null;
 var currentId = 0;
-const response = require('./response')
 const db = require('./settings/db')
-
+const jwt = require('jsonwebtoken')
 async function getAuths() {
 	db.query("SELECT `AuthId`, `Mail`,`Pass` FROM `Auth`", (error, rows, fields)=>{
 		if(error) {
 			response.status(400, error, res)
+			
 		} else {
 			response.status(200, rows, res)
 		}
 	})
-	return auths.recordset;
 }
 
 async function getRecords() {
@@ -62,7 +60,18 @@ async function getServ() {
 	return serv.recordset;
 }
 
+async function getAuth(authId) {
+	try {
+		let pool = await sql.createConnection(config);
+		let auth = await pool
+			.input('input_parameter', sql.Int, authId)
+			.query("SELECT * from Auth where Id = @input_parameter");
+		return auth.recordsets;
 
+	}
+	catch (error) {
+		console.log(error);
+	}
 }
 async function getAuth(req, res) {
 	db.query("SELECT * from Auth where Id ='" + req.body.Mail + "' ",(error, rows, fields)=>{
@@ -93,6 +102,7 @@ async function getAuth(req, res) {
 		}
 	})
 }
+
 
 
 async function addRecord(auth, auths) {
@@ -132,31 +142,31 @@ async function addRecord(auth, auths) {
 }
 
 
-async function  signup = (req, res) => {
+async function  signup (req, res) {
 
-    db.query("SELECT `id`, `email`, `name` FROM `Auth` WHERE `Auth` = '" + req.body.Mail + "'", (error, rows, fields) => {
-        if(error) {
-            response.status(400, error, res)
-        } else if(typeof rows !== 'undefined' && rows.length > 0) {
-            const row = JSON.parse(JSON.stringify(rows))
-            row.map(rw => {
-                response.status(302, {message: `Пользователь с таким email - ${rw.Mail} уже зарегстрирован!`}, res)
-                return true
-            })
-        } else {
-            const email = req.body.Mail
-            const password =req.body.Pass
-            const sql ="Insert into `Auth`(`Mail`, `Pass`) values ("'+Mail+'","'+Pass+'")";
-            db.query(sql, (error, results) => {
-                if(error) {
-                    response.status(400, error, res)
-                } else {
-                    response.status(200, {message: `Регистрация прошла успешно.`, results}, res)
-                }
-            })
+	db.query("SELECT `id`, `email`, `name` FROM `Auth` WHERE `Auth` = '" + req.body.Mail + "'", (error, rows, fields) => {
+		if(error) {
+			response.status(400, error, res)
+		} else if(typeof rows !== 'undefined' && rows.length > 0) {
+			const row = JSON.parse(JSON.stringify(rows))
+			row.map(rw => {
+				response.status(302, {message: `Пользователь с таким email - ${rw.Mail} уже зарегстрирован!`}, res)
+				return true
+			})
+		} else {
+			const email = req.body.Mail
+			const password =req.body.Pass
+			const sql ="Insert into `Auth`(`Mail`, `Pass`) values ('" + Mail + "','" + Pass + "')";
+			db.query(sql, (error, results) => {
+				if(error) {
+					response.status(400, error, res)
+				} else {
+					response.status(200, {message: `Регистрация прошла успешно.`, results}, res)
+				}
+			})
 
-        }
-    })
+		}
+	})
 
 }
 
@@ -199,7 +209,7 @@ async function Authent(auth, auths) {
 module.exports = {
 	getAuths: getAuths,
 	getAuth : getAuth,
-	addAuth : addAuth,
+	signup : signup,
 	Authent : Authent,
 	getServ : getServ,
 	addRecord : addRecord,
