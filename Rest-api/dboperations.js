@@ -17,15 +17,16 @@ async function getAuths() {
 }
 
 async function getRecords() {
-    try {
-        let pool = await sql.createConnection(config);
-        let records = await pool.request().query("Select r.RecordId, s.Name, r.CreateDate, c.Name+' '+c.Surname+' '+c.Patronymic as 'Customer', r.PaymentType, w.Surname+' '+w.Name as 'Worker', r.RecordState from Record r join Serv s on s.ServId = r.ServId join Customer c on c.CustomerId = r.CustomerId join Worker w on w.WorkerId = r.WorkerId");
+	db.query("Select r.RecordId, s.Name, r.CreateDate, c.Name+' '+c.Surname+' '+c.Patronymic as 'Customer', r.PaymentType, w.Surname+' '+w.Name as 'Worker', r.RecordState from Record r join Serv s on s.ServId = r.ServId join Customer c on c.CustomerId = r.CustomerId join Worker w on w.WorkerId = r.WorkerId"=>{
+				if(error) {
+				response.status(400, error, res)
+			} else {
+				response.status(200, rows, res)
+			}
+		})
         console.log(records.recordset)
 		return records.recordset;
-    }
-    catch (error) {
-        console.log(error);
-    }
+    
 }
 
 async function getURecords() {
