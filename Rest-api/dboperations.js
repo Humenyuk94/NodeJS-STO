@@ -17,7 +17,7 @@ async function getAuths() {
 }
 
 async function getRecords() {
-	db.query("Select r.RecordId, s.Name, r.CreateDate, c.Name+' '+c.Surname+' '+c.Patronymic as 'Customer', r.PaymentType, w.Surname+' '+w.Name as 'Worker', r.RecordState from Record r join Serv s on s.ServId = r.ServId join Customer c on c.CustomerId = r.CustomerId join Worker w on w.WorkerId = r.WorkerId"=>{
+	db.query("Select r.RecordId, s.Name, r.CreateDate, c.Name+' '+c.Surname+' '+c.Patronymic as 'Customer', r.PaymentType, w.Surname+' '+w.Name as 'Worker', r.RecordState from Record r join Serv s on s.ServId = r.ServId join Customer c on c.CustomerId = r.CustomerId join Worker w on w.WorkerId = r.WorkerId",(error, rows, fields)=>{
 				if(error) {
 				response.status(400, error, res)
 			} else {
@@ -33,6 +33,7 @@ async function getURecords() {
     try {
         let pool = await sql.createConnection(config);
 		//console.log("curr "+currentId);
+		db.query("")
 		let customer = await pool
 			.input('authId', sql.Int, currentId)
 			.query("SELECT * from Customer where AuthId = @authId");
@@ -49,20 +50,45 @@ async function getURecords() {
 }
 
 async function getServ() {
-    try {
-        let pool = await sql.createConnection(config);
-        let serv = await pool.request().query("SELECT * from Serv");
+        db.query("SELECT * from Serv", (error, rows, fields)=>{
+		if(error) {
+				response.status(400, error, res)
+			} else {
+				response.status(200, rows, res)
+			}
+		})
         return serv.recordset;
     }
-    catch (error) {
-        console.log(error);
-    }
-}
 
 async function getAuth(authId) {
     try {
         let pool = await sql.createConnection(config);
         let auth = await pool
+            .input('input_parameter', sql.Int, authId)
+            .query("SELECT * from Auth where Id = @input_parameter");
+        return auth.recordsets;
+
+    }
+    catch (error) {
+        console.log(error);
+    }
+}
+async function getAuth(authId) {
+  db.query("SELECT * from Auth where Id = @input_parameter",=>{
+	    if(error) {
+            response.status(400, error, res)
+        }
+		else if(rows.length <= 0) {
+            response.status(401, {message: `Пользователь с email - ${@input_parameter} не найден. Пройдите регистрацию.`}, res)
+        }else {
+			
+		}
+		else {
+                    //Выкидываем ошибку что пароль не верный
+                    response.status(401, {message: `Пароль не верный.`}, res)
+
+                }
+  })
             .input('input_parameter', sql.Int, authId)
             .query("SELECT * from Auth where Id = @input_parameter");
         return auth.recordsets;
