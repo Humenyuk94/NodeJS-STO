@@ -6,21 +6,14 @@ var currentId = 0;
 const db = require('./settings/db')
 
 async function getAuths() {
-    try {
-        let pool = await sql.createConnection(config);
-        let auths = await pool.query("SELECT * from Auth");
-		/*var auth = new Auth({
-			AuthId: auths[0].authId,
-			Mail: auths[0].Mail,
-			Pass: auths[0].Pass
+	    db.query("SELECT `AuthId`, `Mail`,`Pass` FROM `Auth`", (error, rows, fields)=>{
+			if(error) {
+				response.status(400, error, res)
+			} else {
+				response.status(200, rows, res)
+			}
 		})
-		console.log(auth)*/
-		//console.log(auths.recordset[0].AuthId)
-        return auths.recordset;
-    }
-    catch (error) {
-        console.log(error);
-    }
+	    return auths.recordset;
 }
 
 async function getRecords() {
