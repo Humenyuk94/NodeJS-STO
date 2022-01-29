@@ -60,19 +60,7 @@ async function getServ() {
 	return serv.recordset;
 }
 
-async function getAuth(authId) {
-	try {
-		let pool = await sql.createConnection(config);
-		let auth = await pool
-			.input('input_parameter', sql.Int, authId)
-			.query("SELECT * from Auth where Id = @input_parameter");
-		return auth.recordsets;
 
-	}
-	catch (error) {
-		console.log(error);
-	}
-}
 async function getAuth(req, res) {
 	db.query("SELECT * from Auth where Id ='" + req.body.Mail + "' ",(error, rows, fields)=>{
 		if(error) {
