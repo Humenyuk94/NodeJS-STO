@@ -136,39 +136,31 @@ async function addRecord(auth, auths) {
 }
 
 
-async function addAuth(auth, auths) {
-	try {
-		let pool = await sql.createConnection(config);
+async function  signup = (req, res) => {
 
-		var Mail = auth.Mail;
-		var Pass = auth.Pass;
-		var isInDB = false;
-		for(i=0;i<auths.length;i++){
-			if(auths[i].Mail==auth.Mail){
-				isInDB = true;
-				break;
-			}
-		}
-		var insertAuth;
-		if(!isInDB){
-			insertAuth = await pool
-				//.input('AuthId', sql.Int, auth.AuthId)
-				.input('Mail', sql.NVarChar, auth.Mail)
-				.input('Pass', sql.NVarChar, auth.Pass)
-				//.execute('InsertAuths');
-				//
+    db.query("SELECT `id`, `email`, `name` FROM `Auth` WHERE `Auth` = '" + req.body.Mail + "'", (error, rows, fields) => {
+        if(error) {
+            response.status(400, error, res)
+        } else if(typeof rows !== 'undefined' && rows.length > 0) {
+            const row = JSON.parse(JSON.stringify(rows))
+            row.map(rw => {
+                response.status(302, {message: `Пользователь с таким email - ${rw.Mail} уже зарегстрирован!`}, res)
+                return true
+            })
+        } else {
+            const email = req.body.Mail
+            const password =req.body.Pass
+            const sql ="Insert into `Auth`(`Mail`, `Pass`) values ("'+Mail+'","'+Pass+'")";
+            db.query(sql, (error, results) => {
+                if(error) {
+                    response.status(400, error, res)
+                } else {
+                    response.status(200, {message: `Регистрация прошла успешно.`, results}, res)
+                }
+            })
 
-				.query("Insert into Auth (Mail, Pass) values (@Mail,@Pass)");
-			//}
-			return insertAuth.recordset;
-		} else {
-			return insertAuth.recordset;
-		}
-
-	}
-	catch (err) {
-		console.log(err);
-	}
+        }
+    })
 
 }
 
