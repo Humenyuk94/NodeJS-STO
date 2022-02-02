@@ -8,7 +8,7 @@ var cors = require('cors');
 var app = express();
 var router = express.Router();
 const exphbs = require('express-handlebars');
-
+const response = require('./response')
 const hbs = exphbs.create({
   defaultLayout: 'main',
   extname: 'hbs'
@@ -82,22 +82,8 @@ router.route('/auth/:id').get((request,response)=>{
 
 })
 
-router.route('/register').post((request,response)=>{
-	//console.log("hello");
-    let auth = {...request.body}
-	var auths;
-	dboperations.getAuths().then(result => {
-		//auths = result;
-		//console.log(auths);
-	
-	
-    dboperations.addAuth(auth, result).then(result => {
-       response.redirect('/api/register')
-	   response.status(201).json(result);
-	   
-    })
-	})
-})
+router.route('/register').post(dboperations.signup)
+
 
 router.route('/records').get((req,res)=>{
   if(isWorker){
@@ -152,7 +138,7 @@ router.route('/logining').post((request,response)=>{
 	dboperations.getAuths().then(result => {
 		dboperations.Authent(auth, result).then(result => {
 		   response.redirect('/api/')
-		   //console.log(result);
+		   console.log(result);
 		   isLogged = result[0];
 		   isWorker = result[1];
 		})

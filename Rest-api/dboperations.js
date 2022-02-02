@@ -5,11 +5,12 @@ var currentUser = null;
 var currentId = 0;
 const db = require('./settings/db')
 const jwt = require('jsonwebtoken')
-async function getAuths() {
+const response = require('./response')
+getAuths = (req, res)=>  {
 	db.query("SELECT `AuthId`, `Mail`,`Pass` FROM `Auth`", (error, rows, fields)=>{
 		if(error) {
 			response.status(400, error, res)
-			
+
 		} else {
 			response.status(200, rows, res)
 		}
@@ -62,14 +63,14 @@ async function getServ() {
 
 
 async function getAuth(req, res) {
-	db.query("SELECT * from Auth where Id ='" + req.body.Mail + "' ",(error, rows, fields)=>{
+	db.query("SELECT * from Auth where AuthId = @input_parameter ",(error, rows, fields)=>{
 		if(error) {
 			response.status(400, error, res)
 		}
 		else if(rows.length <= 0) {
 			response.status(401, {message: `Пользователь с email - ${req.body.Mail} не найден. Пройдите регистрацию.`}, res)
 		}
-		 else {
+		else {
 			const row = JSON.parse(JSON.stringify(rows))
 			row.map(rw => {
 				const password = req.body.Pass
@@ -81,12 +82,12 @@ async function getAuth(req, res) {
 					}, config.jwt, {expiresIn: 200 * 200})
 					response.status(200, {token: `Bearer ${token}`}, res)
 				}
-	            else {
+				else {
 					//Выкидываем ошибку что пароль не верный
 					response.status(401, {message: `Пароль не верный.`}, res)
 				}
 				return true
-		    })
+			})
 		}
 	})
 }
@@ -130,9 +131,9 @@ async function addRecord(auth, auths) {
 }
 
 
-async function  signup (req, res) {
+signup = (req, res)=> {
 
-	db.query("SELECT `id`, `email`, `name` FROM `Auth` WHERE `Auth` = '" + req.body.Mail + "'", (error, rows, fields) => {
+	db.query("SELECT `AuthId`, `Mail`, `Pass` FROM `Auth` WHERE `Mail` = '" + req.body.Mail + "'", (error, rows, fields) => {
 		if(error) {
 			response.status(400, error, res)
 		} else if(typeof rows !== 'undefined' && rows.length > 0) {
@@ -142,14 +143,13 @@ async function  signup (req, res) {
 				return true
 			})
 		} else {
-			const email = req.body.Mail
-			const password =req.body.Pass
-			const sql ="Insert into `Auth`(`Mail`, `Pass`) values ('" + Mail + "','" + Pass + "')";
+			const sql ="Insert into `Auth`(`Mail`, `Pass`) values ('"+ req.body.Mail +"','"+ req.body.Pass +"')";
 			db.query(sql, (error, results) => {
 				if(error) {
 					response.status(400, error, res)
 				} else {
-					response.status(200, {message: `Регистрация прошла успешно.`, results}, res)
+
+					response.status(200,{message: `Регистрация прошла успешно.`, results},res);
 				}
 			})
 
