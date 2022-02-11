@@ -80,24 +80,24 @@ async function getServ() {
 }
 
 
-login =(req, res) => {
+signin =(req, res) => {
 	db.query("SELECT * from Auth where Mail = '" + req.body.Mail + "' ",(error, rows, fields)=>{
 		if(error) {
 			response.status(400, error, res)
 		}
 		else if(rows.length <= 0) {
-			response.status(401, {message: `Пользователь с email - ${req.body.Mail} не найден. Пройдите регистрацию.`}, res)
+			response.status(401, {message: `Пользователь с email - ${rw.body.Mail} не найден. Пройдите регистрацию.`}, res)
 		}
 		else {
 			const row = JSON.parse(JSON.stringify(rows))
 			row.map(rw => {
-				const Pass = req.body.Pass
+				const Pass = (req.body.Pass , rw.Pass)
 				if (Pass) {
-					const jwt_tocken = jwt.sign({
+					const token = jwt.sign({
 
 						userId: rw.AuthId,
 						email: rw.Mail
-					}, config.jwt, {expiresIn: 200 * 200})
+					}, config.jwt, {expiresIn: 120 * 120})
 					response.status(200, {token: `Bearer ${token}`}, res)
 				}
 				else {
@@ -179,6 +179,7 @@ signup = (req, res)=> {
 
 
 //}
+/**
 async function signin(auth, auths) {
 	try {
 		var Mail = auth.Mail;
@@ -207,6 +208,8 @@ async function signin(auth, auths) {
 	}
 
 }
+ */
+
 
 
 
