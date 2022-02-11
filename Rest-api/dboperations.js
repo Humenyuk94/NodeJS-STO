@@ -1,20 +1,38 @@
 var config = require('./dbconfig');
 const sql = require('mysql');
 var Auth = require('./auth')
+const response = require('./response')
 var currentUser = null;
 var currentId = 0;
 const db = require('./settings/db')
 const jwt = require('jsonwebtoken')
-const response = require('./response')
-getAuths = (req, res)=>  {
-	db.query("SELECT `AuthId`, `Mail`,`Pass` FROM `Auth`", (error, rows, fields)=>{
-		if(error) {
-			response.status(400, error, res)
 
-		} else {
-			response.status(200, rows, res)
-		}
-	})
+//var Db  = require('./dboperations');
+var Auth = require('./auth');
+const dboperations = require('./dboperations');
+
+var express = require('express');
+var bodyParser = require('body-parser');
+var cors = require('cors');
+var app = express();
+var router = express.Router();
+const exphbs = require('express-handlebars');
+async function  getAuths (){
+	try {
+		let auths = await db.query("SELECT * from Auth");
+		/*var auth = new Auth({
+			AuthId: auths[0].authId,
+			Mail: auths[0].Mail,
+			Pass: auths[0].Pass
+		})
+		console.log(auth)*/
+		//console.log(auths.recordset[0].AuthId)
+		return auths.recordset;
+	}
+	catch (error) {
+		console.log(error);
+	}
+
 }
 
 async function getRecords() {
@@ -62,8 +80,8 @@ async function getServ() {
 }
 
 
-async function getAuth(req, res) {
-	db.query("SELECT * from Auth where AuthId = @input_parameter ",(error, rows, fields)=>{
+login =(req, res) => {
+	db.query("SELECT * from Auth where Mail = '" + req.body.Mail + "' ",(error, rows, fields)=>{
 		if(error) {
 			response.status(400, error, res)
 		}
@@ -73,7 +91,7 @@ async function getAuth(req, res) {
 		else {
 			const row = JSON.parse(JSON.stringify(rows))
 			row.map(rw => {
-				const password = req.body.Pass
+				const Pass = req.body.Pass
 				if (Pass) {
 					const jwt_tocken = jwt.sign({
 
@@ -130,7 +148,6 @@ async function addRecord(auth, auths) {
 
 }
 
-
 signup = (req, res)=> {
 
 	db.query("SELECT `AuthId`, `Mail`, `Pass` FROM `Auth` WHERE `Mail` = '" + req.body.Mail + "'", (error, rows, fields) => {
@@ -148,8 +165,10 @@ signup = (req, res)=> {
 				if(error) {
 					response.status(400, error, res)
 				} else {
+					return res.redirect('/api/register')
+					return response.status(200,{message: `Регистрация прошла успешно.`, results},res)
+					;
 
-					response.status(200,{message: `Регистрация прошла успешно.`, results},res);
 				}
 			})
 
@@ -158,17 +177,17 @@ signup = (req, res)=> {
 
 }
 
-async function Authent(auth, auths) {
-	try {
-		let pool = await sql.createConnection(config);
 
+//}
+async function signin(auth, auths) {
+	try {
 		var Mail = auth.Mail;
 		var Pass = auth.Pass;
 		var canLogin = false;
 		var isWorker = false;
 		for(i=0;i<auths.length;i++){
 			if(auths[i].Mail==auth.Mail && auths[i].Pass == auth.Pass){
-				let customer = await pool
+				let customer = await db
 					.input('authId', sql.Int, auths[i].AuthId)
 					.query("SELECT * from Customer where AuthId = @authId");
 				if(customer.recordset[0].TypeAccess == 'Worker'){
@@ -196,11 +215,11 @@ async function Authent(auth, auths) {
 
 module.exports = {
 	getAuths: getAuths,
-	getAuth : getAuth,
 	signup : signup,
-	Authent : Authent,
+	signin : signin,
 	getServ : getServ,
 	addRecord : addRecord,
 	getURecords : getURecords,
-	getRecords : getRecords
+	getRecords : getRecords,
+	login : login
 }

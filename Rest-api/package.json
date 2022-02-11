@@ -12,6 +12,7 @@
     "cors": "2.8.1",
     "express": "~4.0.0",
     "express-handlebars": "^6.0.2",
+    "http": "^0.0.1-security",
     "msnodesqlv8": "^2.4.4",
     "mssql": "^6.2.1",
     "mysql": "^2.18.1"

@@ -1,14 +1,14 @@
 //var Db  = require('./dboperations');
 var Auth = require('./auth');
 const dboperations = require('./dboperations');
-
+const response = require('./response')
 var express = require('express');
 var bodyParser = require('body-parser');
 var cors = require('cors');
 var app = express();
 var router = express.Router();
 const exphbs = require('express-handlebars');
-const response = require('./response')
+
 const hbs = exphbs.create({
   defaultLayout: 'main',
   extname: 'hbs'
@@ -82,7 +82,10 @@ router.route('/auth/:id').get((request,response)=>{
 
 })
 
-router.route('/register').post(dboperations.signup)
+router.route('/register').post((dboperations.signup),(req,res)=>
+{
+		res.redirect('/api/register')
+	})
 
 
 router.route('/records').get((req,res)=>{
@@ -130,7 +133,7 @@ router.route('/create').post((request,response)=>{
    })
 	}
 })
-
+router.route('/logining').post(dboperations.login)
 router.route('/logining').post((request,response)=>{
 	//console.log("hello");
     let auth = {...request.body}
@@ -143,6 +146,7 @@ router.route('/logining').post((request,response)=>{
 		   isWorker = result[1];
 		})
 	})
+
 })
 
 var port = process.env.PORT || 8090;
