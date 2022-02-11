@@ -1,0 +1,19 @@
+<h2>Todos page</h2>
+  {{#if result.length}}
+  <table>
+    <thead>
+      <th>Mail</th>
+      <th>Password</th>
+    </tr>
+    </thead>
+    {{#each result}}
+    <tr class="todo">
+      <td>{{Mail}}</td>
+      <td>{{Pass}}</td>
+    </tr>
+    
+    {{/each}}
+  </table>
+  {{else}}
+  <p>No todos!</p>
+  {{/if}}

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Пользователи</title>
+</head>
+<body>
+
+<div align="center" style="border: thick double #32a1ce; border-radius: 120px; background-color:#F5F5F5">
+	<h1> Menu:</h1>
+	<h2> Margarita</h2>
+	<h2> Vegan</h2>
+	<h2> Country</h2>
+	<h2> Spicy</h2>
+</div>
+<!-- <form>
+<div>
+<button type="button" id="infobut">Вывести платформу</button>
+<div id="infoout"></div>
+</div>
+</form> -->
+<div style="border: thick double #0080FD; border-radius: 120px; background-color:#DEFBFF">
+<h1 align="center">Создать заказ:</h1>
+<form>
+<div align="center">
+<label for="createUserInput">Заказ:</label>
+<input id="createUserInput">
+<button type="button" id="createUserBtn">Создать заказ</button>
+<div id="createUserOutput"></div>
+</div>
+</form>
+<h1 align="center">Изменить заказ:</h1>
+<form>
+<div align="center">
+<label for="changeUserInput">Номер:</label>
+<input id="changeUserInput"></br>
+<label for="changeUserInput2">Заказ:</label>
+<input id="changeUserInput2"></br>
+<button type="button" id="changeUserBtn">Изменить заказ</button>
+<div id="changeUserOutput"></div>
+</div>
+</form>
+<h1 align="center">Удалить заказ:</h1>
+<form>
+<div align="center">
+<label for="deleteUserInput">Заказ:</label>
+<input id="deleteUserInput">
+<button type="button" id="deleteUserBtn">Удалить заказ</button>
+<div id="deleteUserOutput"></div>
+</div>
+</form>
+<h1 align="center">Показать заказ:</h1>
+<form>
+<div align="center">
+<label for="outputUserInput">Заказ:</label>
+<input id="outputUserInput">
+<button type="button" id="getAllBtn">Показать заказ</button>
+<div id="getAllOutput"></div>
+</div>
+</form></br>
+</div>
+</body>
+<script>
+window.onload = function () {
+		const Menu = ["Margarita", "Vegan", "Country", "Spicy"];
+		var errr=0;
+
+		//const infobut = document.getElementById("infobut");
+		//const infoout = document.getElementById("infoout");
+
+        const getAllBtn = document.getElementById("getAllBtn");
+        const getAllOutput = document.getElementById("getAllOutput");
+		const outputUserInput = document.getElementById("outputUserInput");
+		
+		const deleteUserInput = document.getElementById("deleteUserInput");
+		const deleteUserOutput = document.getElementById("deleteUserOutput");
+        const deleteUserBtn = document.getElementById("deleteUserBtn");
+		
+		const changeUserInput = document.getElementById("changeUserInput");
+		const changeUserInput2 = document.getElementById("changeUserInput2");
+		const changeUserOutput = document.getElementById("changeUserOutput");
+        const changeUserBtn = document.getElementById("changeUserBtn");
+		
+        const createUserInput = document.getElementById("createUserInput");
+        const createUserOutput = document.getElementById("createUserOutput");
+        const createUserBtn = document.getElementById("createUserBtn");
+		
+		/*function Info() {
+			const body = deleteUserInput.value;
+			let user_id = new Object;
+			user_id.id=body;
+            const options = {
+                method: "POST",
+                body: JSON.stringify(user_id),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            };
+			fetch("/inform", options).then(responce => responce.text()).then(data => {
+                infoout.innerText = data;
+            });
+        }*/
+
+		
+		function deleteUsers() {
+            const body = deleteUserInput.value;
+			let user_id = new Object;
+			user_id.id=body;
+            const options = {
+                method: "POST",
+                body: JSON.stringify(user_id),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            };
+            fetch("/delete", options).then(responce => responce.text()).then(data => {
+                deleteUserOutput.innerText = data;
+            });
+        }
+		
+		function changeUsers() {
+			errr=1;
+			var s=changeUserInput2.value;
+			var rts=s.split(', ');
+			for(i=0;i<rts.length;i++){
+				for(j=0;j<Menu.length;j++){
+					if(rts[i]==Menu[j]){
+						errr=0;
+						break;
+					} else {
+					errr=1;
+					}
+				}
+			}
+			if (errr==0){
+            const body = changeUserInput.value;
+			const zakaz = changeUserInput2.value;
+			let user_id = new Object;
+			user_id.id=body;
+			user_id.zakaz={"name":zakaz};
+			
+            const options = {
+                method: "POST",
+                body: JSON.stringify(user_id),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            };
+            fetch("/update", options).then(responce => responce.text()).then(data => {
+                changeUserOutput.innerText = data;
+            });
+			} else {
+				document.getElementById('changeUserOutput').innerHTML = "Помилка";
+			}
+        }
+		
+		function getAllUsers() {
+            const body = outputUserInput.value;
+			let user_id = new Object;
+			user_id.id=body;
+			
+            const options = {
+                method: "POST",
+                body: JSON.stringify(user_id),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            };
+            fetch("/zakaz", options).then(responce => responce.text()).then(data => {
+                getAllOutput.innerText = data;
+            });
+        }
+		
+
+        function createUsers() {
+			errr=1;
+			var s=createUserInput.value;
+			var rts=s.split(', ');
+			for(i=0;i<rts.length;i++){
+				for(j=0;j<Menu.length;j++){
+					if(rts[i]==Menu[j]){
+						errr=0;
+						break;
+					} else {
+					errr=1;
+					}
+				}
+			}
+			if (errr==0){
+            const body = '{"name":"' + createUserInput.value + '"}';
+            const options = {
+                method: "POST",
+                body: body,
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            };
+            fetch("/users", options).then(responce => responce.text()).then(data => {
+                createUserOutput.innerText = data;
+            });
+			} else {
+				document.getElementById('createUserOutput').innerHTML = "Помилка";
+			}
+        }
+		//infobut.addEventListener("click", Info);
+		
+		deleteUserBtn.addEventListener("click", deleteUsers);
+		
+		changeUserBtn.addEventListener("click", changeUsers);
+
+        createUserBtn.addEventListener("click", createUsers);
+
+        getAllBtn.addEventListener("click", getAllUsers);
+
+    }
+</script>
+</html>
+
+
+
+
+
+
+
+
